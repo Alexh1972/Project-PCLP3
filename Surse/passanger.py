@@ -145,3 +145,30 @@ class Passanger:
                 plt.hist(x, bins='auto')
                 plt.title(field)
                 plt.show()
+
+    def printMissingValues(passangers):
+        missingValues = Passanger.findMissingValues(passangers)
+        auxiliar = Passanger()
+        print("Missing values")
+        for i in range(len(missingValues)):
+            print(str(missingValues[i]) + " " + str(missingValues[i] / len(passangers)))
+        survivedPassangers = [passanger for passanger in passangers if passanger.survived == 1]
+        missingValuesSurvived = Passanger.findMissingValues(survivedPassangers)
+        deadPassangers = [passanger for passanger in passangers if passanger.survived == 0]
+        missingValuesDead = Passanger.findMissingValues(deadPassangers)
+        print("Missing values survived")
+        for i in range(len(missingValuesSurvived)):
+            print(str(missingValuesSurvived[i]) + " " + str(missingValuesSurvived[i] / len(missingValuesSurvived)))
+        print("Missing values survived")
+        for i in range(len(missingValuesDead)):
+            print(str(missingValuesDead[i]) + " " + str(missingValuesDead[i] / len(deadPassangers)))
+
+    def findMissingValues(passangers):
+        auxiliar = Passanger()
+        missingValues = []
+        for field in auxiliar.__dict__.keys():
+            x = [getattr(passanger, field) for passanger in passangers]
+            valueToFind = auxiliar.__dict__.get(field)
+            indices = [index for index, element in enumerate(x) if element == valueToFind]
+            missingValues.append(len(indices))
+        return missingValues
