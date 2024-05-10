@@ -16,9 +16,10 @@ class Passanger:
     cabin = ""
     embarked = ""
     survived = 0
+    ageGroup = 0
 
     def __init__(self, passangerId=0, pclass=0, name="", sex="", age=0, sibSp=0, parch=0, ticket=0, fare=0, cabin="",
-                 embarked="", survived=0):
+                 embarked="", survived=0, ageGroup = 0):
         self.name = name
         self.passangerId = passangerId
         self.pclass = pclass
@@ -31,13 +32,43 @@ class Passanger:
         self.cabin = cabin
         self.embarked = embarked
         self.survived = survived
+        self.ageGroup = ageGroup
+
+    def convertCsvDataToPassanger(data, i):
+        try:
+            return Passanger(data.at[i, 'PassengerId'],
+                                  data.at[i, 'Pclass'],
+                                  data.at[i, 'Name'],
+                                  data.at[i, 'Sex'],
+                                  data.at[i, 'Age'],
+                                  data.at[i, 'SibSp'],
+                                  data.at[i, 'Parch'],
+                                  data.at[i, 'Ticket'],
+                                  data.at[i, 'Fare'],
+                                  data.at[i, 'Cabin'],
+                                  data.at[i, 'Embarked'],
+                                  data.at[i, 'Survived'],
+                                  data.at[i, 'Age Group'])
+        except:
+            return Passanger(data.at[i, 'PassengerId'],
+                             data.at[i, 'Pclass'],
+                             data.at[i, 'Name'],
+                             data.at[i, 'Sex'],
+                             data.at[i, 'Age'],
+                             data.at[i, 'SibSp'],
+                             data.at[i, 'Parch'],
+                             data.at[i, 'Ticket'],
+                             data.at[i, 'Fare'],
+                             data.at[i, 'Cabin'],
+                             data.at[i, 'Embarked'],
+                             data.at[i, 'Survived'])
 
     def __str__(self):
         return str(self.passangerId) + " NAME: " + self.name + " CLASS: " + str(
             self.pclass) + " SEX: " + self.sex + " AGE: " + str(self.age) + " SIBSP: " + str(
             self.sibSp) + " PARCH: " + str(self.parch) + " TICKET: " + str(self.ticket) + " FARE: " + str(
             self.fare) + " CABIN: " + str(self.cabin) + " EMBARKED: " + str(self.embarked) + " SURVIVED: " + str(
-            self.survived)
+            self.survived) + " AGE GROUP: " + str(self.ageGroup)
 
     def getCsvData(fileName):
         return pd.read_csv(fileName)
@@ -50,18 +81,7 @@ class Passanger:
             numberColumns = len(data.columns)
             dataTypes = data.dtypes
             for i in range(len(data)):
-                passanger = Passanger(data.at[i, 'PassengerId'],
-                                      data.at[i, 'Pclass'],
-                                      data.at[i, 'Name'],
-                                      data.at[i, 'Sex'],
-                                      data.at[i, 'Age'],
-                                      data.at[i, 'SibSp'],
-                                      data.at[i, 'Parch'],
-                                      data.at[i, 'Ticket'],
-                                      data.at[i, 'Fare'],
-                                      data.at[i, 'Cabin'],
-                                      data.at[i, 'Embarked'],
-                                      data.at[i, 'Survived'])
+                passanger = Passanger.convertCsvDataToPassanger(data, i)
                 passangers.append(passanger)
             print("Number of columns: " + str(numberColumns))
             print("Column types : \n" + str(dataTypes))
@@ -193,3 +213,20 @@ class Passanger:
         while i < len(ages) and age > ages[i]:
             i += 1
         return i + 1
+
+    def printSurvivingRateByAge(data):
+        passangers = []
+        for i in range(len(data)):
+            passangers.append(Passanger.convertCsvDataToPassanger(data, i))
+        x = []
+        for i in range(1, 5):
+            passangersByAge = [passanger for passanger in passangers if passanger.ageGroup == i and passanger.sex == "male"]
+            survivors = [passanger for passanger in passangersByAge if passanger.survived == 1]
+            rate = len(survivors) / len(passangersByAge)
+            x.append(rate)
+
+        plt.plot(np.arange(1, 5, 1), x)
+        plt.title("Survive rate by age")
+        plt.show()
+
+
