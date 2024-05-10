@@ -39,12 +39,14 @@ class Passanger:
             self.fare) + " CABIN: " + str(self.cabin) + " EMBARKED: " + str(self.embarked) + " SURVIVED: " + str(
             self.survived)
 
+    def getCsvData(fileName):
+        return pd.read_csv(fileName)
     def readPassangersCsvFile(fileName):
         with open(fileName) as file:
             passangers = []
             fieldName = ['PassengerId', 'Pclass', 'Name', 'Sex', 'Age', 'SibSp', 'Parch', 'Ticket', 'Fare', 'Cabin',
                          'Embarked', 'Survived']
-            data = pd.read_csv(fileName)
+            data = Passanger.getCsvData(fileName)
             numberColumns = len(data.columns)
             dataTypes = data.dtypes
             for i in range(len(data)):
@@ -172,3 +174,22 @@ class Passanger:
             indices = [index for index, element in enumerate(x) if element == valueToFind]
             missingValues.append(len(indices))
         return missingValues
+
+    def addAgeGroupColumn(data):
+        ages = []
+        x = np.arange(0, len(data), 1)
+        for i in range(len(data)):
+            age = data.at[i, 'Age']
+            ages.append(Passanger.getAgeGroup(age))
+        data['Age Group'] = ages
+        plt.title("Age group")
+        plt.hist(x)
+        plt.show()
+        return data
+
+    def getAgeGroup(age):
+        ages = [20, 40, 60]
+        i = 0
+        while i < len(ages) and age > ages[i]:
+            i += 1
+        return i + 1
