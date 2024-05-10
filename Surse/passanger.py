@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class Passanger:
     passangerId = 0
     pclass = 0
@@ -16,7 +17,8 @@ class Passanger:
     embarked = ""
     survived = 0
 
-    def __init__(self, passangerId, pclass, name, sex, age, sibSp, parch, ticket, fare, cabin, embarked, survived):
+    def __init__(self, passangerId=0, pclass=0, name="", sex="", age=0, sibSp=0, parch=0, ticket=0, fare=0, cabin="",
+                 embarked="", survived=0):
         self.name = name
         self.passangerId = passangerId
         self.pclass = pclass
@@ -31,7 +33,11 @@ class Passanger:
         self.survived = survived
 
     def __str__(self):
-        return str(self.passangerId) + " NAME: " + self.name + " CLASS: " + str(self.pclass) + " SEX: " + self.sex + " AGE: " + str(self.age) + " SIBSP: " + str(self.sibSp) + " PARCH: " + str(self.parch) + " TICKET: " + str(self.ticket) + " FARE: " + str(self.fare) + " CABIN: " + str(self.cabin) + " EMBARKED: " + str(self.embarked) + " SURVIVED: " + str(self.survived)
+        return str(self.passangerId) + " NAME: " + self.name + " CLASS: " + str(
+            self.pclass) + " SEX: " + self.sex + " AGE: " + str(self.age) + " SIBSP: " + str(
+            self.sibSp) + " PARCH: " + str(self.parch) + " TICKET: " + str(self.ticket) + " FARE: " + str(
+            self.fare) + " CABIN: " + str(self.cabin) + " EMBARKED: " + str(self.embarked) + " SURVIVED: " + str(
+            self.survived)
 
     def readPassangersCsvFile(fileName):
         with open(fileName) as file:
@@ -68,13 +74,14 @@ class Passanger:
         return passangers
 
     def printSurvivorPercentage(passangers):
-        x = np.arange(0,6,1)
+        x = np.arange(0, 7, 1)
         y = []
-        labels = ['General', 'Class 1', 'Class 2', 'Class 3', 'Male', 'Female']
+        labels = ['Surviving', 'Deaths', 'Class 1', 'Class 2', 'Class 3', 'Male', 'Female']
         percentageSurviving = Passanger.getSurvivorPercentage(passangers)
         print("Survivors: " + str(percentageSurviving))
         print("Deaths: " + str(1 - percentageSurviving))
         y.append(percentageSurviving)
+        y.append(1 - percentageSurviving)
 
         for i in range(1, 4):
             classPercentage = Passanger.getSurvivorPercentageByClass(passangers, i)
@@ -88,6 +95,7 @@ class Passanger:
         print("Female percentage: " + str(percentageFemale))
         plt.bar(x, y)
         plt.xticks(x, labels)
+        plt.title("Surviving rate")
         plt.show()
 
     def getSurvivorPercentage(passangers):
@@ -128,3 +136,12 @@ class Passanger:
                 females += 1
 
         return survivingMales / males, survivingFemales / females
+
+    def printHistogram(passangers):
+        auxiliar = Passanger()
+        for field in auxiliar.__dict__.keys():
+            if type(auxiliar.__dict__.get(field)) == int:
+                x = [getattr(passanger, field) for passanger in passangers]
+                plt.hist(x, bins='auto')
+                plt.title(field)
+                plt.show()
