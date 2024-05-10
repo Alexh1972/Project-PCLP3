@@ -229,4 +229,14 @@ class Passanger:
         plt.title("Survive rate by age")
         plt.show()
 
+    def printSurvivingRateKidsAdults(passangers):
+        kids = [passanger for passanger in passangers if passanger.age < 18]
+        adults = [passanger for passanger in passangers if passanger.age >= 18]
+        kidsPercentage = Passanger.getSurvivorPercentage(kids)
+        adultsPercentage = Passanger.getSurvivorPercentage(adults)
+        print("Kids percentage : " + str(len(kids) / len(passangers)))
+        plt.bar([0, 1], [kidsPercentage, adultsPercentage])
+        plt.xticks([0, 1], ['Kids', 'Adults'])
+        plt.show()
+
 
