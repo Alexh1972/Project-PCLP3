@@ -239,4 +239,27 @@ class Passanger:
         plt.xticks([0, 1], ['Kids', 'Adults'])
         plt.show()
 
+    def checkNameTitles(passangers):
+        maleTitles = ['Mr.', 'Mrs.', 'Don.', 'Master.']
+        femaleTitles = ['Ms.', 'Miss.']
+        maleTitlesCount = [0, 0, 0, 0]
+        femaleTitlesCount = [0, 0]
+        incorrectMatching = 0
+        for passanger in passangers:
+            tokens = passanger.name.split(" ")
+            hasMaleTitle = 0
+            for title in maleTitles:
+                if title in tokens:
+                    hasMaleTitle = 1
+                    maleTitlesCount[maleTitles.index(title)] += 1
 
+            for title in femaleTitles:
+                if title in tokens:
+                    femaleTitlesCount[femaleTitles.index(title)] += 1
+            if (hasMaleTitle and passanger.sex == 'female') or (hasMaleTitle == 0 and passanger.sex == 'male'):
+                incorrectMatching = 1
+                print(passanger)
+        print("Names are correct : " + str(1 - incorrectMatching))
+        plt.bar(np.arange(0, len(maleTitles) + len(femaleTitles), 1), maleTitlesCount + femaleTitlesCount)
+        plt.xticks(np.arange(0, len(maleTitles) + len(femaleTitles), 1), maleTitles + femaleTitles)
+        plt.show()
