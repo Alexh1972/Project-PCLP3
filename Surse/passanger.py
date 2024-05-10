@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+
 class Passanger:
     passangerId = 0
     pclass = 0
@@ -12,8 +14,9 @@ class Passanger:
     fare = 0
     cabin = ""
     embarked = ""
+    survived = 0
 
-    def __init__(self, passangerId, pclass, name, sex, age, sibSp, parch, ticket, fare, cabin, embarked):
+    def __init__(self, passangerId, pclass, name, sex, age, sibSp, parch, ticket, fare, cabin, embarked, survived):
         self.name = name
         self.passangerId = passangerId
         self.pclass = pclass
@@ -25,52 +28,36 @@ class Passanger:
         self.fare = fare
         self.cabin = cabin
         self.embarked = embarked
+        self.survived = survived
 
-    def print(self):
-        print(str(self.passangerId) +
-              " NAME: " +
-              self.name +
-              " CLASS: " +
-              str(self.pclass) +
-              " SEX: " +
-              self.sex +
-              " AGE: " +
-              str(self.age) +
-              " SIBSP: " +
-              str(self.sibSp) +
-              " PARCH: " +
-              str(self.parch) +
-              " TICKET: " +
-              str(self.ticket) +
-              " FARE: " +
-              str(self.fare) +
-              " CABIN: " +
-              str(self.cabin) +
-              " EMBARKED: " +
-              str(self.embarked))
+    def __str__(self):
+        return str(self.passangerId) + " NAME: " + self.name + " CLASS: " + str(self.pclass) + " SEX: " + self.sex + " AGE: " + str(self.age) + " SIBSP: " + str(self.sibSp) + " PARCH: " + str(self.parch) + " TICKET: " + str(self.ticket) + " FARE: " + str(self.fare) + " CABIN: " + str(self.cabin) + " EMBARKED: " + str(self.embarked) + " SURVIVED: " + str(self.survived)
 
     def readPassangersCsvFile(fileName):
         with open(fileName) as file:
             passangers = []
-            fieldName = ['PassengerId', 'Pclass', 'Name', 'Sex', 'Age', 'SibSp', 'Parch', 'Ticket', 'Fare', 'Cabin', 'Embarked']
+            fieldName = ['PassengerId', 'Pclass', 'Name', 'Sex', 'Age', 'SibSp', 'Parch', 'Ticket', 'Fare', 'Cabin',
+                         'Embarked', 'Survived']
             data = pd.read_csv(fileName)
             numberColumns = len(data.columns)
             dataTypes = data.dtypes
             for i in range(len(data)):
-                passanger = Passanger(data.at[i,'PassengerId'],
-                                      data.at[i,'Pclass'],
-                                      data.at[i,'Name'],
-                                      data.at[i,'Sex'],
-                                      data.at[i,'Age'],
-                                      data.at[i,'SibSp'],
-                                      data.at[i,'Parch'],
-                                      data.at[i,'Ticket'],
-                                      data.at[i,'Fare'],
-                                      data.at[i,'Cabin'],
-                                      data.at[i,'Embarked'])
+                passanger = Passanger(data.at[i, 'PassengerId'],
+                                      data.at[i, 'Pclass'],
+                                      data.at[i, 'Name'],
+                                      data.at[i, 'Sex'],
+                                      data.at[i, 'Age'],
+                                      data.at[i, 'SibSp'],
+                                      data.at[i, 'Parch'],
+                                      data.at[i, 'Ticket'],
+                                      data.at[i, 'Fare'],
+                                      data.at[i, 'Cabin'],
+                                      data.at[i, 'Embarked'],
+                                      data.at[i, 'Survived'])
                 passangers.append(passanger)
             print("Number of columns: " + str(numberColumns))
             print("Column types : \n" + str(dataTypes))
+            print("Missing cells on columns: ")
             for i in range(len(fieldName)):
                 print(fieldName[i] + " " + str(len(data[data[fieldName[i]].isna()])))
             if len(data[data.duplicated()]) == 0:
@@ -80,3 +67,64 @@ class Passanger:
             print("Number rows: " + str(len(data)))
         return passangers
 
+    def printSurvivorPercentage(passangers):
+        x = np.arange(0,6,1)
+        y = []
+        labels = ['General', 'Class 1', 'Class 2', 'Class 3', 'Male', 'Female']
+        percentageSurviving = Passanger.getSurvivorPercentage(passangers)
+        print("Survivors: " + str(percentageSurviving))
+        print("Deaths: " + str(1 - percentageSurviving))
+        y.append(percentageSurviving)
+
+        for i in range(1, 4):
+            classPercentage = Passanger.getSurvivorPercentageByClass(passangers, i)
+            y.append(classPercentage)
+            print("Class : " + str(i) + " percentage : " + str(classPercentage))
+
+        percentageMale, percentageFemale = Passanger.getSurvivorPercentageBySex(passangers)
+        y.append(percentageMale)
+        y.append(percentageFemale)
+        print("Male percentage: " + str(percentageMale))
+        print("Female percentage: " + str(percentageFemale))
+        plt.bar(x, y)
+        plt.xticks(x, labels)
+        plt.show()
+
+    def getSurvivorPercentage(passangers):
+        totalpassangers = len(passangers)
+        countSurviving = 0
+        for i in range(totalpassangers):
+            if passangers[i].survived:
+                countSurviving += 1
+
+        return countSurviving / totalpassangers
+
+    def getSurvivorPercentageByClass(passangers, pclass):
+        totalpassangers = len(passangers)
+        countSurviving = 0
+        classMembers = 0
+        for i in range(totalpassangers):
+            if passangers[i].pclass == pclass:
+                if passangers[i].survived:
+                    countSurviving += 1
+                classMembers += 1
+
+        return countSurviving / classMembers
+
+    def getSurvivorPercentageBySex(passangers):
+        totalpassangers = len(passangers)
+        survivingMales = 0
+        survivingFemales = 0
+        males = 0
+        females = 0
+        for i in range(totalpassangers):
+            if passangers[i].sex == "male":
+                if passangers[i].survived:
+                    survivingMales += 1
+                males += 1
+            else:
+                if passangers[i].survived:
+                    survivingFemales += 1
+                females += 1
+
+        return survivingMales / males, survivingFemales / females
