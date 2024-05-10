@@ -263,3 +263,24 @@ class Passanger:
         plt.bar(np.arange(0, len(maleTitles) + len(femaleTitles), 1), maleTitlesCount + femaleTitlesCount)
         plt.xticks(np.arange(0, len(maleTitles) + len(femaleTitles), 1), maleTitles + femaleTitles)
         plt.show()
+
+    def replaceMissingValues(data):
+        passangers = []
+        for i in range(len(data)):
+            passangers.append(Passanger.convertCsvDataToPassanger(data, i))
+        data = data.replace(' ', np.nan)
+        for i in range(0, len(data)):
+            for field in data.columns:
+                if pd.isna(data.at[i, field]):
+                    if field == 'Age' or field == 'Parch' or field == 'Fare' or field == 'SibSp':
+                        classField = field[0].lower() + field[1:len(field)];
+                        x = [getattr(passanger, classField) for passanger in passangers if passanger.survived == data.at[i, 'Survived'] and not pd.isna(getattr(passanger, classField))]
+                        newValue = sum(x) / len(x)
+                        data.at[i, field] = newValue
+                    elif field == 'Pclass' or field == 'Sex' or field == 'Embarked' or field == 'Name' or field == 'Cabin' or field == 'Ticket':
+                        classField = field[0].lower() + field[1:len(field)];
+                        x = [getattr(passanger, classField) for passanger in passangers if passanger.survived == data.at[i, 'Survived'] and not pd.isna(getattr(passanger, classField))]
+                        unique, counts = np.unique(x, return_counts=True)
+                        index = np.argmax(counts)
+                        data.at[i, field] = unique[index]
+        return data
