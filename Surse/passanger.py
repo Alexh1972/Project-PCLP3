@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sb
 
 
 class Passanger:
@@ -284,3 +285,9 @@ class Passanger:
                         index = np.argmax(counts)
                         data.at[i, field] = unique[index]
         return data
+
+    def analyseDeathsByFactors(data):
+        sb.scatterplot(data=data, x="Pclass", y="Fare", hue="Survived", s = 20)
+        plt.legend()
+        plt.show()
+
