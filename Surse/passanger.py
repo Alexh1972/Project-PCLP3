@@ -175,17 +175,17 @@ class Passanger:
         auxiliar = Passanger()
         print("Missing values")
         for i in range(len(missingValues)):
-            print(str(missingValues[i]) + " " + str(missingValues[i] / len(passangers)))
+            print(str(missingValues[i][0]) + " " + str(missingValues[i][1] / len(passangers)))
         survivedPassangers = [passanger for passanger in passangers if passanger.survived == 1]
         missingValuesSurvived = Passanger.findMissingValues(survivedPassangers)
         deadPassangers = [passanger for passanger in passangers if passanger.survived == 0]
         missingValuesDead = Passanger.findMissingValues(deadPassangers)
         print("Missing values survived")
         for i in range(len(missingValuesSurvived)):
-            print(str(missingValuesSurvived[i]) + " " + str(missingValuesSurvived[i] / len(missingValuesSurvived)))
-        print("Missing values survived")
+            print(str(missingValuesSurvived[i][0]) + " " + str(missingValuesSurvived[i][1] / len(survivedPassangers)))
+        print("Missing values dead")
         for i in range(len(missingValuesDead)):
-            print(str(missingValuesDead[i]) + " " + str(missingValuesDead[i] / len(deadPassangers)))
+            print(str(missingValuesDead[i][0]) + " " + str(missingValuesDead[i][1] / len(deadPassangers)))
 
     def findMissingValues(passangers):
         auxiliar = Passanger()
@@ -194,7 +194,7 @@ class Passanger:
             x = [getattr(passanger, field) for passanger in passangers]
             valueToFind = auxiliar.__dict__.get(field)
             indices = [index for index, element in enumerate(x) if element == valueToFind]
-            missingValues.append(len(indices))
+            missingValues.append([field, len(indices)])
         return missingValues
 
     def addAgeGroupColumn(data):
