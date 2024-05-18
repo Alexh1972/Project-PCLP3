@@ -76,9 +76,10 @@ class Passanger:
     def readPassangersCsvFile(fileName):
         with open(fileName) as file:
             passangers = []
-            fieldName = ['PassengerId', 'Pclass', 'Name', 'Sex', 'Age', 'SibSp', 'Parch', 'Ticket', 'Fare', 'Cabin',
-                         'Embarked', 'Survived']
+            fieldName = []
             data = Passanger.getCsvData(fileName)
+            for field in data.columns:
+                fieldName.append(field)
             numberColumns = len(data.columns)
             dataTypes = data.dtypes
             for i in range(len(data)):
