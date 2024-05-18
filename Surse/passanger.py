@@ -242,28 +242,31 @@ class Passanger:
         plt.show()
 
     def checkNameTitles(passangers):
-        maleTitles = ['Mr.', 'Mrs.', 'Don.', 'Master.']
-        femaleTitles = ['Ms.', 'Miss.']
-        maleTitlesCount = [0, 0, 0, 0]
-        femaleTitlesCount = [0, 0]
+        maleTitles = ['Mr.', 'Don.', 'Master.', 'Dr.', 'Capt.', 'Col.', 'Rev.', 'Major.', 'Sir.', 'Jonkheer.']
+        femaleTitles = ['Mrs.', 'Ms.', 'Miss.', 'Dr.', 'Capt.']
+        maleTitlesCount = np.zeros(len(maleTitles))
+        femaleTitlesCount = np.zeros(len(femaleTitles))
         incorrectMatching = 0
         for passanger in passangers:
             tokens = passanger.name.split(" ")
+            unisexTitle = 0
             hasMaleTitle = 0
             for title in maleTitles:
                 if title in tokens:
+                    if title in femaleTitles:
+                        unisexTitle = 1
                     hasMaleTitle = 1
                     maleTitlesCount[maleTitles.index(title)] += 1
 
             for title in femaleTitles:
                 if title in tokens:
                     femaleTitlesCount[femaleTitles.index(title)] += 1
-            if (hasMaleTitle and passanger.sex == 'female') or (hasMaleTitle == 0 and passanger.sex == 'male'):
+            if ((hasMaleTitle and passanger.sex == 'female') or (hasMaleTitle == 0 and passanger.sex == 'male')) and unisexTitle == 0:
                 incorrectMatching = 1
                 print(passanger)
         print("Names are correct : " + str(1 - incorrectMatching))
-        plt.bar(np.arange(0, len(maleTitles) + len(femaleTitles), 1), maleTitlesCount + femaleTitlesCount)
-        plt.xticks(np.arange(0, len(maleTitles) + len(femaleTitles), 1), maleTitles + femaleTitles)
+        plt.bar(np.arange(0, len(maleTitles) + len(femaleTitles), 1), np.concatenate((maleTitlesCount, femaleTitlesCount)))
+        plt.xticks(np.arange(0, len(maleTitles) + len(femaleTitles), 1), np.concatenate((maleTitles, femaleTitles)))
         plt.show()
 
     def replaceMissingValues(data):
