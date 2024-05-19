@@ -19,8 +19,8 @@ class Passanger:
     survived = 0
     ageGroup = 0
 
-    def __init__(self, passangerId=0, pclass=0, name="", sex="", age=0, sibSp=0, parch=0, ticket=0, fare=0, cabin="",
-                 embarked="", survived=0, ageGroup = 0):
+    def __init__(self, passangerId=-1, pclass=-1, name="", sex="", age=-1, sibSp=-1, parch=-1, ticket=-1, fare=-1, cabin="",
+                 embarked="", survived=-1, ageGroup = -1):
         self.name = name
         self.passangerId = passangerId
         self.pclass = pclass
@@ -164,11 +164,12 @@ class Passanger:
     def printHistogram(passangers):
         auxiliar = Passanger()
         for field in auxiliar.__dict__.keys():
-            if type(auxiliar.__dict__.get(field)) == int:
-                x = [getattr(passanger, field) for passanger in passangers]
-                plt.hist(x, bins='auto')
-                plt.title(field)
-                plt.show()
+            if isinstance(auxiliar.__dict__.get(field), (int, float, complex)):
+                x = [getattr(passanger, field) for passanger in passangers if passanger.__dict__.get(field) != auxiliar.__dict__.get(field)]
+                if len(x) != 0:
+                    plt.hist(x, bins='auto')
+                    plt.title(field)
+                    plt.show()
 
     def printMissingValues(passangers):
         missingValues = Passanger.findMissingValues(passangers)
