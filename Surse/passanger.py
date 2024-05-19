@@ -85,16 +85,18 @@ class Passanger:
             for i in range(len(data)):
                 passanger = Passanger.convertCsvDataToPassanger(data, i)
                 passangers.append(passanger)
-            print("Number of columns: " + str(numberColumns))
-            print("Column types : \n" + str(dataTypes))
+            print("---PRINT CSV FILE DETAILS---")
+            print("Number of columns: " + str(numberColumns), end="\n\n")
+            print("Column types : \n" + str(dataTypes), end="\n\n")
             print("Missing cells on columns: ")
             for i in range(len(fieldName)):
-                print(fieldName[i] + " " + str(len(data[data[fieldName[i]].isna()])))
+                print("Column " + fieldName[i] + " number of missing values - " + str(len(data[data[fieldName[i]].isna()])))
             if len(data[data.duplicated()]) == 0:
-                print("No dublicated rows")
+                print("No dublicated rows", end="\n\n")
             else:
-                print("There are dublicated rows")
+                print("There are dublicated rows", end="\n\n")
             print("Number rows: " + str(len(data)))
+            print("---END PRINT CSV FILE DETAILS---", end="\n\n")
         return passangers
 
     def printSurvivorPercentage(passangers):
@@ -102,21 +104,24 @@ class Passanger:
         y = []
         labels = ['Surviving', 'Deaths', 'Class 1', 'Class 2', 'Class 3', 'Male', 'Female']
         percentageSurviving = Passanger.getSurvivorPercentage(passangers)
-        print("Survivors: " + str(percentageSurviving))
-        print("Deaths: " + str(1 - percentageSurviving))
+        print("---PRINT SURVIVAL RATE---")
+        print("No. Survivors - " + str(percentageSurviving))
+        print("No. Deaths - " + str(1 - percentageSurviving), end="\n\n")
         y.append(percentageSurviving)
         y.append(1 - percentageSurviving)
 
         for i in range(1, 4):
             classPercentage = Passanger.getSurvivorPercentageByClass(passangers, i)
             y.append(classPercentage)
-            print("Class : " + str(i) + " percentage : " + str(classPercentage))
+            print("Survivors for class - " + str(i) + ", percentage - " + str(classPercentage))
+        print()
 
         percentageMale, percentageFemale = Passanger.getSurvivorPercentageBySex(passangers)
         y.append(percentageMale)
         y.append(percentageFemale)
-        print("Male percentage: " + str(percentageMale))
-        print("Female percentage: " + str(percentageFemale))
+        print("Male percentage - " + str(percentageMale))
+        print("Female percentage - " + str(percentageFemale))
+        print("---END PRINT SURVIVAL RATE---", end="\n\n")
         plt.bar(x, y)
         plt.xticks(x, labels)
         plt.title("Surviving rate")
@@ -174,27 +179,29 @@ class Passanger:
     def printMissingValues(passangers):
         missingValues = Passanger.findMissingValues(passangers)
         auxiliar = Passanger()
-        print("Missing values")
+        print("---PRINT MISSING VALUES---")
         for i in range(len(missingValues)):
-            print(str(missingValues[i][0]) + " " + str(missingValues[i][1] / len(passangers)))
+            print("Column \"" + str(missingValues[i][0]) + "\" missing values percentage - " + str(missingValues[i][1] / len(passangers)))
         survivedPassangers = [passanger for passanger in passangers if passanger.survived == 1]
         missingValuesSurvived = Passanger.findMissingValues(survivedPassangers)
         deadPassangers = [passanger for passanger in passangers if passanger.survived == 0]
         missingValuesDead = Passanger.findMissingValues(deadPassangers)
+        print()
         print("Missing values survived")
         for i in range(len(missingValuesSurvived)):
-            print(str(missingValuesSurvived[i][0]) + " " + str(missingValuesSurvived[i][1] / len(survivedPassangers)))
+            print("Column \"" + str(missingValuesSurvived[i][0]) + "\" missing values percentage - " + str(missingValuesSurvived[i][1] / len(survivedPassangers)))
+        print()
         print("Missing values dead")
         for i in range(len(missingValuesDead)):
-            print(str(missingValuesDead[i][0]) + " " + str(missingValuesDead[i][1] / len(deadPassangers)))
-
+            print("Column \"" + str(missingValuesDead[i][0]) + "\" missing values percentage - " + str(missingValuesDead[i][1] / len(deadPassangers)))
+        print("---END PRINT MISSING VALUES---", end="\n\n")
     def findMissingValues(passangers):
         auxiliar = Passanger()
         missingValues = []
         for field in auxiliar.__dict__.keys():
             x = [getattr(passanger, field) for passanger in passangers]
             valueToFind = auxiliar.__dict__.get(field)
-            indices = [index for index, element in enumerate(x) if element == valueToFind]
+            indices = [index for index, element in enumerate(x) if element == valueToFind or pd.isna(element)]
             missingValues.append([field, len(indices)])
         return missingValues
 
@@ -206,7 +213,7 @@ class Passanger:
             ages.append(Passanger.getAgeGroup(age))
         data['Age Group'] = ages
         plt.title("Age group")
-        plt.hist(x)
+        plt.hist(ages)
         plt.show()
         return data
 
@@ -237,9 +244,11 @@ class Passanger:
         adults = [passanger for passanger in passangers if passanger.age >= 18]
         kidsPercentage = Passanger.getSurvivorPercentage(kids)
         adultsPercentage = Passanger.getSurvivorPercentage(adults)
-        print("Kids percentage : " + str(len(kids) / len(passangers)))
+        print("---COMPARE CHILDREN TO ADULTS---")
+        print("Children percentage : " + str(len(kids) / len(passangers)))
+        print("---END COMPARE CHILDREN TO ADULTS---", end="\n\n")
         plt.bar([0, 1], [kidsPercentage, adultsPercentage])
-        plt.xticks([0, 1], ['Kids', 'Adults'])
+        plt.xticks([0, 1], ['Children', 'Adults'])
         plt.show()
 
     def checkNameTitles(passangers):
@@ -265,7 +274,9 @@ class Passanger:
             if ((hasMaleTitle and passanger.sex == 'female') or (hasMaleTitle == 0 and passanger.sex == 'male')) and unisexTitle == 0:
                 incorrectMatching = 1
                 print(passanger)
-        print("Names are correct : " + str(1 - incorrectMatching))
+        print("---CHECK NAME TITLES---")
+        print("Name titles are correct : " + str((1 - incorrectMatching == 1)))
+        print("---END CHECK NAME TITLES---", end="\n\n")
         plt.bar(np.arange(0, len(maleTitles) + len(femaleTitles), 1), np.concatenate((maleTitlesCount, femaleTitlesCount)))
         plt.xticks(np.arange(0, len(maleTitles) + len(femaleTitles), 1), np.concatenate((maleTitles, femaleTitles)))
         plt.show()
